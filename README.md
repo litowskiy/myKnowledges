@@ -510,7 +510,7 @@ F(6) #8
 
 **BFS** (**Breadth** first search) — в ширину — с использованием **очередей** (**LIFO**)
 
-## [**LinkedList (унарное дерево)**](https://www.notion.so/My-Knowledges-1d1540e9016c80da87a8f45db1e69680?pvs=21)
+## [**LinkedList**](https://www.notion.so/My-Knowledges-1d1540e9016c80da87a8f45db1e69680?pvs=21)
 
 # ООП
 
