@@ -498,4 +498,323 @@ def F(n):
 F(6) #8
 ```
 
-На базовом уровне про деревья расписать
+## Бинарные деревья
+
+В контексте деревьев как правило несколько вариантов обходов:
+
+**DFS** (**Depth** first search) — в глубину — с использованием **стеков** (**FIFO**)
+
+- pre order — сначала родитель, потом правое, левое
+- in order — сначала листья левые, потом родитель, потом правые
+- post order — сначала левые листья, правые, потом родитель
+
+**BFS** (**Breadth** first search) — в ширину — с использованием **очередей** (**LIFO**)
+
+## [**LinkedList (унарное дерево)**](https://www.notion.so/My-Knowledges-1d1540e9016c80da87a8f45db1e69680?pvs=21)
+
+# ООП
+
+## Принципы ООП
+
+### Абстракция
+
+Код должен зависеть от абстракций, а не конкретных реализаций
+
+В примере ниже абстракция в том, что наш метод sound принимает что-угодно, лишь бы наследовалось от Animal. Если бы на вход метода sound поступала dog, то это уже было бы нарушением принципа абстракции
+
+```python
+class Animal:
+  def make_sound(self):
+    pass
+
+class Dog(Animal):
+  def make_sound(self):
+    return 'Woof'
+
+def sound(animal: Animal): # абстракция (не важно кто, важно, что метод реализует)
+  return animal.make_sound()
+
+dog = Dog()
+sound(dog)
+```
+
+### Наследование
+
+```python
+class Animal:
+  def make_sound(self):
+    pass
+
+class Dog(Animal): # наследование от Animal
+  def make_sound(self):
+    return 'Woof'
+    
+class Cat(Animal): # наследование от Animal
+  def make_sound(self):
+    return 'Meow'
+```
+
+### Полиморфизм
+
+Переопределение методов в дочерних классах
+
+```python
+class Animal:
+  def make_sound(self):
+    pass
+
+class Dog(Animal):
+  def make_sound(self): # полиморфизм
+    return 'Woof'
+    
+class Cat(Animal): # полиморфизм
+  def make_sound(self):
+    return 'Meow'
+```
+
+### Инкапсуляция
+
+Сокрытие реализации. Доступ к свойствам объекта должен осуществляться с помощью специальных get и set методов
+
+Вариант 1 — классические методы:
+
+```python
+class Cat:
+	def __init__(self, name)
+		self._name = name
+		
+	def get_name(self):
+		return self._name
+		
+	def set_name(self, new_name):
+		self._name = new_name
+		
+cat = Cat('sharik')
+cat.get_name() #sharik
+cat.set_name('murzik')
+cat.get_name() #murzik
+```
+
+Вариант 2 — декоратор @property:
+Позволит обращаться к name **через функции как к свойству**
+
+```python
+class Cat:
+  def __init__(self, name):
+    self._name = name
+    
+  @property
+  def name(self):
+    return self._name
+
+  @name.setter
+  def name(self, new_name):
+    self._name = new_name
+
+cat = Cat('sharik')
+cat.name #sharik
+cat.name = 'murzik'
+cat.name #murzik
+```
+
+## Принципы SOLID
+
+### Single Responsibility
+
+Каждый класс отвечает за свой отрезок работы. Нет god-object
+
+```python
+#Правильно - разные по логике действия разделены
+class ImageSaver:
+	def save_image(self):
+		pass
+		
+class ImageZipper:
+	def zip_image(self):
+		pass
+		
+class ImageSender:
+	def send_image(self):
+		pass
+		
+class ImageUnzipper:
+	def unzip_image(self):
+		pass
+```
+
+```python
+#Неправильно - все в одной куче (сохранение, сжатие, отправка)
+class Image:
+	def save_image(self):
+		pass
+		
+	def zip_image(self):
+		pass
+		
+	def send_image(self):
+		pass
+		
+	def unzip_image(self):
+		pass
+```
+
+### Open-closed principle
+
+Объекты открыты для расширения, но закрыты для модификации
+
+Нарушением этого принципа может быть наличие if-else логики в функции
+
+```python
+#Правильно - для подсчета площади новой фигуры не придется изменять код подсчета старых
+class Figure(ABC):
+	@abstractmethod
+	def count_area(self):
+		pass
+
+class Triangle(Figure):
+	def count_area(self, a, h):
+		return 0.5 * a * h
+		
+class Square(Figure):
+	def count_area(self, a):
+		return a**2
+		
+class Round(Figure):
+	def count_area(self, r):
+		return 3.14 * r**2
+```
+
+```python
+#Неправильно - придется менять и добавлять if-else выражения
+def count_area():
+	if figure == 'round':
+		return 3.14 * r**2
+	elif figure == 'triangle':
+		return 0.5 * a * h
+	elif Square == 'square':
+		return a**2
+```
+
+### Liskov Substitution Principle
+
+Объекты подклассов должны быть **взаимозаменяемыми** с объектами базовых классов
+
+```python
+class Bird:
+  def fly(self):
+    pass
+
+class Pigeon(Bird):
+  def fly(self):
+    return 'pigeon flying'
+
+class Penguin(Bird):
+  def fly(self):
+    raise NotImplementedError('Penguins dont fly')
+
+def let_it_fly(bird: Bird): #нарушение LSP поскольку пингвины не летают
+    print(bird.fly())
+```
+
+### Interface segregation principle
+
+Объекты не должны реализовывать те методы от базовых классов, которых у них нет
+
+В примере ниже все правильно. У домашних животных есть клички, у диких — нет. Орел, хоть и животное, но не бегает, а летает в отличие от собаки
+
+Похожим явлением этого принципа будет являться **Duck Typing**
+
+```python
+from abc import ABC, abstractmethod
+
+class HomeAnimal(ABC):
+  @abstractmethod
+  def __init__(self, name):
+    self.name = name
+
+class Flyable(ABC):
+  @abstractmethod
+  def flies(self):
+    pass
+    
+class Runnable(ABC):
+  @abstractmethod
+  def run(self):
+    pass
+
+class Animal(ABC):
+  @abstractmethod
+  def eats(self):
+    pass
+
+class Fox(Animal):
+  def eats(self):
+    return 'fox eating'
+
+class Eagle(Animal, Flyable):
+  def eats(self):
+    return 'eagle eating'
+
+  def flies(self):
+    return 'eagle flying'
+
+class Dog(Animal, HomeAnimal, Runnable):
+  def __init__(self, name):
+    self.name = name
+
+  def eats(self):
+    return f'{self.name} eating'
+```
+
+### Dependency inversion principle
+
+Модули нижних уровней не должны влиять на модули верхних
+Написание кода от абстракций, а не конкретных реализаций
+
+В примере ниже видно, нам не важно, что здесь за птица. Главное, что есть метод fly.
+
+```python
+class Bird:
+  def fly(self):
+    pass
+
+class Pigeon(Bird):
+  def fly(self):
+    return 'pigeon flying'
+
+def let_it_fly(bird: Bird):
+    print(bird.fly())
+```
+
+## **Duck Typing**
+
+```python
+from abc import ABC, abstractmethod
+
+class Runnable(ABC):
+    @abstractmethod
+    def run(self):
+      pass
+
+class Cat(Runnable):
+    def run(self):
+        return "Cat runs"
+
+def move(animal: Runnable):
+    print(animal.run())
+```
+
+```python
+from typing import Protocol
+
+class Runnable(Protocol):
+    def run(self):
+      pass
+
+class Cat:
+    def run(self):
+        return "Cat runs"
+
+def move(animal: Runnable):
+    print(animal.run())
+```
